@@ -1,0 +1,58 @@
+name: trackit_pluse
+description: "TrackIt Pulse locates your assets in real-time, sending you constant monitoring data to optimize their management."
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.2 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.6
+  flutter_launcher_icons: ^0.13.1
+  google_maps_flutter: ^2.6.0
+  permission_handler: ^10.3.0
+  maps_launcher: ^2.2.1
+  http: ^1.2.1
+  animate_do: ^3.3.4
+
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/logo.png"
+  min_sdk_android: 21
+  web:
+    generate: true
+    image_path: "assets/images/logo.png"
+    background_color: "#hexcode"
+    theme_color: "#hexcode"
+    windows:
+      generate: true
+      image_path: "assets/images/logo.png"
+      icon_size: 48 # min:48, max:256, default: 48
+    macos:
+      generate: true
+      image_path: "assets/images/logo.png"
+
+
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+  flutter_lints: ^3.0.0
+
+
+flutter:
+
+  uses-material-design: true
+  assets:
+    - assets/images/
+
