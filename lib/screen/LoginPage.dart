@@ -2,11 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:toast/toast.dart';
 
-import '../screen/ForgotPasswordPage.dart';
-import '../screen/HomePage.dart';
-import '../screen/SignUpPage.dart';
+import '../widgets/AppBottomNavigation.dart';
+import 'ForgotPasswordPage.dart';
+import 'HomePage.dart';
+import 'SignUpPage.dart';
 
-class AssetTrackerLogin extends StatefulWidget {
+class LoginPage extends StatefulWidget {
   @override
   _AssetTrackerLoginState createState() => _AssetTrackerLoginState();
 }
@@ -14,7 +15,7 @@ class AssetTrackerLogin extends StatefulWidget {
 final _controllerEmail = TextEditingController();
 final _controllerPassword = TextEditingController();
 
-class _AssetTrackerLoginState extends State<AssetTrackerLogin> {
+class _AssetTrackerLoginState extends State<LoginPage> {
   bool validateEmail = false;
   bool validatePassword = false;
 
@@ -255,7 +256,7 @@ class _AssetTrackerLoginState extends State<AssetTrackerLogin> {
                                               // Handle sign-up navigation
                                               Navigator.push(
                                                 context,
-                                                MaterialPageRoute(builder: (context) => HomePage()),
+                                                MaterialPageRoute(builder: (context) => MainPage(title: 'TrackIt Pulse',)),
                                               );
                                             },
                                           ),

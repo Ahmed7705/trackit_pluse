@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'UserProfile.dart';
+import '../screen/UserProfile.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final double barHeight;
@@ -25,20 +25,11 @@ class _CustomAppBarState extends State<CustomAppBar> {
 
             Container(
                 color: Colors.lightBlue[700],
-                // decoration: BoxDecoration(
-                //   gradient: LinearGradient(
-                //       begin: Alignment.topLeft,
-                //       end: Alignment.bottomRight,
-                //       colors: [
-                //         const Color(0xff1f83fe),
-                //         const Color(0xff006bff),
-                //         const Color(0xff006bff),
-                //       ]),
-                // ),
+
                 child: Center(
                   child: Container(
-                    child: Text(
-                      "Safety",
+                    child: const Text(
+                      "TrackIt Plus",
                       style: TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.bold,
@@ -49,48 +40,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                   ),
                 )
 
-              // ListTile(
-              //   contentPadding: EdgeInsets.only(left: 25, top: 8, bottom: 0),
-              //   leading: CircleAvatar(
-              //     radius: 25,
-              //   ),
-              //   // Icon(
-              //   //   Icons.menu,
-              //   //   size: 30,
-              //   //   color: Colors.white,
-              //   // ),
-              //   title: Row(
-              //     children: <Widget>[
-              //       // Text(
-              //       //   "Hello, ",
-              //       //   style: TextStyle(
-              //       //       color: Colors.white, fontSize: 20, letterSpacing: 2),
-              //       // ),
-              //       Text(
-              //         "Faiz Ainur Rofiq",
-              //         style: TextStyle(
-              //           fontSize: 20,
-              //           // fontWeight: FontWeight.bold,
-              //           color: Colors.white,
-              //           letterSpacing: 2,
-              //         ),
-              //         overflow: TextOverflow.ellipsis,
-              //       ),
-              //     ],
-              //   ),
-              //   subtitle: Text(
-              //     "Owner",
-              //     style: TextStyle(
-              //       color: Colors.white70,
-              //       letterSpacing: 1.7,
-              //     ),
-              //   ),
-              //   onTap: () {
-              //     setState(() {
-              //       widget.scafKey.currentState.openDrawer();
-              //     });
-              //   },
-              // ),
+
             ),
             Container(
 
@@ -104,13 +54,12 @@ class _CustomAppBarState extends State<CustomAppBar> {
                           builder: (context) =>
                               PatientProfile()
                       )),
-                  child: CircleAvatar(
-                    maxRadius: height * 0.03,
-                    backgroundColor: Colors.black.withOpacity(0.2),
-                    backgroundImage: NetworkImage("https://m.media-amazon.com/images/I/2128q5aAVQL._AC_UL320_.png"),
+                child: CircleAvatar(
+                  maxRadius: height * 0.03,
+                  backgroundColor: Colors.black.withOpacity(0.2),
+                  backgroundImage: AssetImage('assets/images/profile.png'),
+                ),
 
-                    //photoUrl
-                  )
               ),
             ),
           ]),

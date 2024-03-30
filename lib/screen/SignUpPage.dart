@@ -4,7 +4,7 @@ import 'package:animate_do/animate_do.dart';
 import '../widgets/AppBottomNavigation.dart';
 import '../widgets/MapScreen.dart';
 
-class LoginPge extends StatelessWidget {
+class SignUpPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
