@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../widgets/MapScreen.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -101,13 +103,3 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class MapScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Text('Map Screen'),
-      ),
-    );
-  }
-}

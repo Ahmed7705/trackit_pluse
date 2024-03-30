@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 
-import 'MapScreen.dart';
+import '../widgets/AppBottomNavigation.dart';
+import '../widgets/MapScreen.dart';
 
-class HomePage extends StatelessWidget {
+class SignUpPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -125,7 +126,7 @@ class HomePage extends StatelessWidget {
                             // Navigate to MapScreen on tap
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => MapScreen()),
+                              MaterialPageRoute(builder: (context) => MainPage(title: 'TrackIt Pulse')),
                             );
                           },
                           child: Container(

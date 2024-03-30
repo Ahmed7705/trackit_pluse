@@ -19,6 +19,11 @@ dependencies:
   maps_launcher: ^2.2.1
   http: ^1.2.1
   animate_do: ^3.3.4
+  convex_bottom_bar: ^3.0.0
+  google_fonts: ^4.0.3
+  toast: ^0.3.0
+
+
 
 
 flutter_launcher_icons:
