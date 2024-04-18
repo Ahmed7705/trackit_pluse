@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "378991474956",
+    "project_id": "trackit-plus",
+    "storage_bucket": "trackit-plus.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:378991474956:android:94fcada6741421de867129",
+        "android_client_info": {
+          "package_name": "com.example.trackit_pluse"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUgNyH1PZHSsfRdKQlMR8niqDXV3Xl4w8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
