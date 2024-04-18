@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
-
 class MapScreen extends StatefulWidget {
   @override
   _MapScreenState createState() => _MapScreenState();
@@ -48,7 +47,8 @@ class _MapScreenState extends State<MapScreen> {
     setState(() {
       _allLocations = [
         for (var location in filterJson(jsonData))
-          LatLng(double.parse(location['field1']), double.parse(location['field2'])),
+          LatLng(double.parse(location['field1']),
+              double.parse(location['field2'])),
       ];
     });
   }
@@ -75,31 +75,30 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: _locations.isEmpty
           ? Center(child: CircularProgressIndicator())
           : GoogleMap(
-        initialCameraPosition: _allLocations.isNotEmpty
-            ? CameraPosition(target: _allLocations.first, zoom: 15.0)
-            : CameraPosition(target: LatLng(0, 0), zoom: 15.0),
-        onMapCreated: (GoogleMapController controller) {
-          mapController = controller;
-        },
-        markers: _locations.map((LatLng location) {
-          return Marker(
-            markerId: MarkerId(location.toString()),
-            position: location,
-          );
-        }).toSet(),
-        polylines: {
-          if (_locations.length > 1)
-            Polyline(
-              polylineId: PolylineId('route'),
-              color: Colors.blue,
-              points: _locations,
+              initialCameraPosition: _allLocations.isNotEmpty
+                  ? CameraPosition(target: _allLocations.first, zoom: 15.0)
+                  : CameraPosition(target: LatLng(0, 0), zoom: 15.0),
+              onMapCreated: (GoogleMapController controller) {
+                mapController = controller;
+              },
+              markers: _locations.map((LatLng location) {
+                return Marker(
+                  markerId: MarkerId(location.toString()),
+                  position: location,
+                );
+              }).toSet(),
+              polylines: {
+                if (_locations.length > 1)
+                  Polyline(
+                    polylineId: PolylineId('route'),
+                    color: Colors.blue,
+                    points: _locations,
+                  ),
+              },
             ),
-        },
-      ),
     );
   }
 }

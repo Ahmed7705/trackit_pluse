@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:toast/toast.dart';
 
 import '../widgets/AppBottomNavigation.dart';
@@ -9,15 +10,18 @@ import 'SignUpPage.dart';
 
 class LoginPage extends StatefulWidget {
   @override
-  _AssetTrackerLoginState createState() => _AssetTrackerLoginState();
+  _LoginPage createState() => _LoginPage();
 }
 
 final _controllerEmail = TextEditingController();
 final _controllerPassword = TextEditingController();
 
-class _AssetTrackerLoginState extends State<LoginPage> {
+class _LoginPage extends State<LoginPage> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   bool validateEmail = false;
   bool validatePassword = false;
+  bool _isObscured = true;
 
   controllerClear() {
     _controllerEmail.clear();
@@ -29,6 +33,30 @@ class _AssetTrackerLoginState extends State<LoginPage> {
       return "Invalid Email Format";
     }
     return null;
+  }
+
+  void signInWithEmailAndPassword(BuildContext context) async {
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: _controllerEmail.text.trim(),
+        password: _controllerPassword.text.trim(),
+      );
+
+      // Navigate to home page after successful sign in
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MainPage(title: 'Ahmed',)),
+      );
+    } catch (e) {
+      // Handle sign in errors
+      print('Sign In Error: $e');
+      // Display a snackbar with a message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Incorrect email or password. Please try again.'),
+        ),
+      );
+    }
   }
 
   @override
@@ -44,31 +72,45 @@ class _AssetTrackerLoginState extends State<LoginPage> {
       onSubmitted: (_) => FocusScope.of(context).nextFocus(),
       controller: _controllerEmail,
       decoration: InputDecoration(
-          fillColor: Colors.white.withOpacity(0.08),
-          filled: true,
-          labelText: 'Enter Email',
-          prefixIcon: Icon(
-            Icons.email,
-            color: Colors.lightBlue[800],
-          ),
-          border: OutlineInputBorder(
-              borderRadius: const BorderRadius.all(const Radius.circular(20)))),
+        fillColor: Colors.white.withOpacity(0.08),
+        filled: true,
+        labelText: 'Enter Email',
+        prefixIcon: Icon(
+          Icons.email,
+          color: Colors.lightBlue[800],
+        ),
+        border: OutlineInputBorder(
+          borderRadius: const BorderRadius.all(const Radius.circular(20)),
+        ),
+      ),
     );
 
     final passwordTextField = TextField(
       keyboardType: TextInputType.text,
-      obscureText: true,
+      obscureText: _isObscured,
       autofocus: false,
       maxLength: 20,
       controller: _controllerPassword,
       onSubmitted: (_) => FocusScope.of(context).unfocus(),
       decoration: InputDecoration(
-          filled: true,
-          errorText: validateEmailFormat(_controllerEmail.text),
-          fillColor: Colors.white.withOpacity(0.08),
-          labelText: 'Password',
-          prefixIcon: Icon(Icons.lock, color: Colors.lightBlue[800]),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(20))),
+        filled: true,
+        errorText: validateEmailFormat(_controllerEmail.text),
+        fillColor: Colors.white.withOpacity(0.08),
+        labelText: 'Password',
+        prefixIcon: Icon(Icons.lock, color: Colors.lightBlue[800]),
+        suffixIcon: IconButton(
+          icon: Icon(
+            _isObscured ?Icons.visibility_off:Icons.visibility,
+            color: Colors.lightBlue[800],
+          ),
+          onPressed: () {
+            setState(() {
+              _isObscured = !_isObscured;
+            });
+          },
+        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+      ),
     );
 
     double baseWidth = 360.5;
@@ -100,14 +142,16 @@ class _AssetTrackerLoginState extends State<LoginPage> {
                 Container(
                   width: width,
                   height: height,
-                  margin: EdgeInsets.fromLTRB(width * 0.03, 0, width * 0.03, 0),
+                  margin: EdgeInsets.fromLTRB(
+                      width * 0.03, 0, width * 0.03, 0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
                       Center(
                         child: Container(
-                          margin: EdgeInsets.fromLTRB(0 * fem, 0 * fem, 0 * fem, 10 * fem + 70),
+                          margin: EdgeInsets.fromLTRB(
+                              0 * fem, 0 * fem, 0 * fem, 10 * fem + 70),
                           width: double.infinity,
                           child: Text(
                             'Sign-In',
@@ -167,7 +211,8 @@ class _AssetTrackerLoginState extends State<LoginPage> {
                         width: width,
                         height: height * 0.25,
                         child: Container(
-                          margin: EdgeInsets.fromLTRB(1.5 * fem, 0 * fem, 18 * fem, 0 * fem),
+                          margin: EdgeInsets.fromLTRB(
+                              1.5 * fem, 0 * fem, 18 * fem, 0 * fem),
                           width: double.infinity,
                           height: 55 * fem,
                           decoration: BoxDecoration(
@@ -182,7 +227,8 @@ class _AssetTrackerLoginState extends State<LoginPage> {
                                   width: 145 * fem,
                                   height: 55 * fem,
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(15 * fem),
+                                    borderRadius:
+                                    BorderRadius.circular(15 * fem),
                                   ),
                                   child: Center(
                                     child: SizedBox(
@@ -190,7 +236,8 @@ class _AssetTrackerLoginState extends State<LoginPage> {
                                       height: 55 * fem,
                                       child: Container(
                                         decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(15 * fem),
+                                          borderRadius:
+                                          BorderRadius.circular(15 * fem),
                                           color: Color(0xff0b65b8),
                                         ),
                                       ),
@@ -205,18 +252,25 @@ class _AssetTrackerLoginState extends State<LoginPage> {
                                   width: 303 * fem,
                                   height: 55 * fem,
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(15 * fem),
+                                    borderRadius:
+                                    BorderRadius.circular(15 * fem),
                                   ),
                                   child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.center,
                                     children: [
                                       Container(
-                                        margin: EdgeInsets.fromLTRB(0 * fem + 5, 0 * fem, 54 * fem, 0 * fem),
+                                        margin: EdgeInsets.fromLTRB(
+                                            0 * fem + 5,
+                                            0 * fem,
+                                            54 * fem,
+                                            0 * fem),
                                         width: 148 * fem,
                                         height: double.infinity,
                                         decoration: BoxDecoration(
                                           color: Color(0xff302121),
-                                          borderRadius: BorderRadius.circular(15 * fem),
+                                          borderRadius:
+                                          BorderRadius.circular(15 * fem),
                                         ),
                                         child: Center(
                                           child: TextButton(
@@ -233,7 +287,9 @@ class _AssetTrackerLoginState extends State<LoginPage> {
                                               // Handle sign-in logic
                                               Navigator.pushReplacement(
                                                 context,
-                                                MaterialPageRoute(builder: (context) => SignUpPage()),
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        SignUpPage()),
                                               );
                                             },
                                           ),
@@ -241,7 +297,11 @@ class _AssetTrackerLoginState extends State<LoginPage> {
                                       ),
                                       Center(
                                         child: Container(
-                                          margin: EdgeInsets.fromLTRB(0 * fem, 1 * fem, 0 * fem, 0 * fem),
+                                          margin: EdgeInsets.fromLTRB(
+                                              0 * fem,
+                                              1 * fem,
+                                              0 * fem,
+                                              0 * fem),
                                           child: TextButton(
                                             child: Text(
                                               'Sign-In',
@@ -253,11 +313,7 @@ class _AssetTrackerLoginState extends State<LoginPage> {
                                               ),
                                             ),
                                             onPressed: () {
-                                              // Handle sign-up navigation
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(builder: (context) => MainPage(title: 'TrackIt Pulse',)),
-                                              );
+                                              signInWithEmailAndPassword(context);
                                             },
                                           ),
                                         ),
@@ -275,7 +331,9 @@ class _AssetTrackerLoginState extends State<LoginPage> {
                                       // Handle forgot password navigation
                                       Navigator.push(
                                         context,
-                                        MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                ForgotPasswordPage()),
                                       );
                                     },
                                     child: Text(
@@ -324,8 +382,10 @@ class _HeaderWavesPainter extends CustomPainter {
     final path = Path();
 
     path.lineTo(0, size.height * 0.35);
-    path.quadraticBezierTo(size.width * 0.25, size.height * 0.40, size.width * 0.5, size.height * 0.30);
-    path.quadraticBezierTo(size.width * 0.75, size.height * 0.20, size.width, size.height * 0.30);
+    path.quadraticBezierTo(size.width * 0.25, size.height * 0.40,
+        size.width * 0.5, size.height * 0.30);
+    path.quadraticBezierTo(
+        size.width * 0.75, size.height * 0.20, size.width, size.height * 0.30);
     path.lineTo(size.width, 0);
     path.lineTo(0, 0);
 

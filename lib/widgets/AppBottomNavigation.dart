@@ -12,10 +12,7 @@ import 'CustomAppBar.dart';
 import '../screen/UserProfile.dart';
 import '../models/CustomNavigationDrawer.dart';
 
-
-
 class MainPage extends StatefulWidget {
-
   MainPage({Key? key, required this.title}) : super(key: key);
 
   final String title;
@@ -31,39 +28,31 @@ class _MainPageState extends State<MainPage> {
   static final List<Widget> _pages = <Widget>[
     Padding(
       padding: EdgeInsets.only(top: 15),
-      child: HomePage(
-      ),
+      child: HomePage(),
+    ),
+    Padding(
+      padding: EdgeInsets.only(top: 15),
+      child: ReportsPage(),
     ),
     Settings(),
     Padding(
       padding: EdgeInsets.only(top: 15),
-      child:
-      ReportsPage( ),
-    ),
-    Padding(
-      padding: EdgeInsets.only(top: 15),
-      child:
-      UserAccount(),
+      child: UserAccount(),
     ),
   ];
 
-  void  onItemTapped(int index) {
+  void onItemTapped(int index) {
     setState(() {
-
       _selectedIndex = index;
-
     });
   }
-  Icon icon2= const Icon(
-      Icons.fiber_new,
-      color:Colors.amber,
-      size: 30
-  );
+
+  Icon icon2 = const Icon(Icons.fiber_new, color: Colors.amber, size: 30);
   @override
   Widget build(BuildContext context) {
     print("Application Launched");
     return Scaffold(
-      backgroundColor:Colors.lightBlue[800] ,
+      backgroundColor: Colors.lightBlue[800],
       key: _scaffoldKey,
       appBar: CustomAppBar(
         scafKey: _scaffoldKey,
@@ -75,9 +64,9 @@ class _MainPageState extends State<MainPage> {
         elevation: 8,
         items: [
           const TabItem(icon: Icons.home, title: 'Home'),
-          const TabItem(icon: Icons.file_copy , title: 'Reports'),
+          const TabItem(icon: Icons.file_copy, title: 'Reports'),
           const TabItem(icon: Icons.settings, title: 'Settings'),
-          TabItem(icon :Icons.account_circle, title: 'Account'),
+          TabItem(icon: Icons.account_circle, title: 'Account'),
         ],
         initialActiveIndex: _selectedIndex,
         onTap: onItemTapped,

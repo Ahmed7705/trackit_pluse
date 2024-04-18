@@ -1,105 +1,88 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../widgets/MapScreen.dart';
-
-void main() => runApp(MyApp());
-
-class MyApp extends StatelessWidget {
+class AddDataPage extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Bottom Navigation Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(),
-    );
-  }
+  _AddDataPageState createState() => _AddDataPageState();
 }
 
-class MyHomePage extends StatefulWidget {
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 0;
-  late PageController _pageController;
-
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController();
-  }
+class _AddDataPageState extends State<AddDataPage> {
+  final _formKey = GlobalKey<FormState>();
+  final nameController = TextEditingController();
+  final titleController = TextEditingController();
 
   @override
   void dispose() {
-    _pageController.dispose();
+    nameController.dispose();
+    titleController.dispose();
     super.dispose();
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      _pageController.animateToPage(
-        index,
-        duration: Duration(milliseconds: 300),
-        curve: Curves.ease,
-      );
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Bottom Navigation Demo'),
+        title: Text('Add Data'),
       ),
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        children: <Widget>[
-          Center(
-            child: Text('Settings Page'),
+      body: Padding(
+        padding: EdgeInsets.all(20.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                controller: nameController,
+                decoration: InputDecoration(
+                  labelText: "Name",
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a name';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: titleController,
+                decoration: InputDecoration(
+                  labelText: "Title",
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a title';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 20.0),
+              ElevatedButton(
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    // Add data to Firestore
+                    final firestoreInstance = FirebaseFirestore.instance;
+                    final collectionReference = firestoreInstance.collection('data');
+                    final documentReference = collectionReference.doc();
+
+                    await documentReference.set({
+                      'name': nameController.text,
+                      'title': titleController.text,
+                    });
+
+                    // Clear form fields after successful addition
+                    nameController.text = '';
+                    titleController.text = '';
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Data added successfully!')),
+                    );
+                  }
+                },
+                child: Text('Add Data'),
+              ),
+            ],
           ),
-          MapScreen(),
-          Center(
-            child: Text('Account Page'),
-          ),
-          Center(
-            child: Text('Asset Page'),
-          ),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Map',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            label: 'Account',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.attach_money),
-            label: 'Asset',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue,
-        onTap: _onItemTapped,
+        ),
       ),
     );
   }
 }
-
