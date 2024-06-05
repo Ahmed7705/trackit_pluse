@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:animate_do/animate_do.dart';
-import 'package:trackit_pluse/screen/LoginPage.dart';
-import '../widgets/AppBottomNavigation.dart';
-import '../widgets/MapScreen.dart';
+import 'package:barcode_scan2/barcode_scan2.dart';
+
+import 'IMEIVerificationPage.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -13,16 +13,28 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpPageState extends State<SignUpPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  TextEditingController _emailController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _mobileController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
 
-  TextEditingController _passwordController = TextEditingController();
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
+  bool _isEmailVerified = false;
 
-  TextEditingController _mobileController = TextEditingController();
+  void _togglePasswordVisibility() {
+    setState(() {
+      _obscurePassword = !_obscurePassword;
+    });
+  }
 
-  TextEditingController _imeiController = TextEditingController();
+  void _toggleConfirmPasswordVisibility() {
+    setState(() {
+      _obscureConfirmPassword = !_obscureConfirmPassword;
+    });
+  }
 
   Future<void> _signUp(BuildContext context) async {
     try {
@@ -31,22 +43,56 @@ class _SignUpPageState extends State<SignUpPage> {
         password: _passwordController.text.trim(),
       );
 
-      // Add user details to Firestore
-      await _firestore.collection('users').doc(userCredential.user?.uid).set({
+      await userCredential.user?.sendEmailVerification();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Go to your email to confirm your account')),
+      );
+
+      setState(() {
+        _isEmailVerified = true;
+      });
+    } catch (e) {
+      print('Sign Up Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Sign Up Error: ${e.toString()}')),
+      );
+    }
+  }
+
+  Future<void> _checkEmailVerification(BuildContext context) async {
+    await _auth.currentUser?.reload();
+    if (_auth.currentUser?.emailVerified ?? false) {
+      await _firestore.collection('users').doc(_auth.currentUser?.uid).set({
         'email': _emailController.text.trim(),
-        'mobile': _mobileController.text.trim(),
-        'imei': _imeiController.text.trim(),
+        'phone': _mobileController.text.trim(),
+        'username': _nameController.text.trim(),
+        'profileImage': '',
       });
 
-      // Navigate to MapScreen on successful signup
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) =>LoginPage()),
+        MaterialPageRoute(builder: (context) => IMEIVerificationPage()),
       );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please verify your email first')),
+      );
+    }
+  }
+
+  Future<void> _scanBarcode() async {
+    try {
+      var result = await BarcodeScanner.scan();
+      if (result.type == ResultType.Barcode) {
+        setState(() {
+          _nameController.text = result.rawContent;
+        });
+      }
     } catch (e) {
-      // Handle sign up errors
-      print('Sign Up Error: $e');
-      // You can show a dialog or snackbar to notify the user about the error.
+      setState(() {
+        _nameController.text = 'Failed to get the name.';
+      });
     }
   }
 
@@ -163,11 +209,27 @@ class _SignUpPageState extends State<SignUpPage> {
                               decoration: BoxDecoration(
                                 border: Border(
                                     bottom: BorderSide(
-                                        color:
-                                        Color.fromRGBO(143, 148, 251, 1))),
+                                        color: Color.fromRGBO(143, 148, 251, 1))),
+                              ),
+                              child: TextField(
+                                controller: _nameController,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: "Name",
+                                  hintStyle: TextStyle(color: Colors.grey[700]),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.all(8.0),
+                              decoration: BoxDecoration(
+                                border: Border(
+                                    bottom: BorderSide(
+                                        color: Color.fromRGBO(143, 148, 251, 1))),
                               ),
                               child: TextField(
                                 controller: _emailController,
+                                keyboardType: TextInputType.emailAddress,
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
                                   hintText: "Email",
@@ -180,34 +242,29 @@ class _SignUpPageState extends State<SignUpPage> {
                               decoration: BoxDecoration(
                                 border: Border(
                                     bottom: BorderSide(
-                                        color:
-                                        Color.fromRGBO(143, 148, 251, 1))),
+                                        color: Color.fromRGBO(143, 148, 251, 1))),
                               ),
-                              child: TextField(
-                                controller: _mobileController,
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: "Mobile Number",
-                                  hintStyle: TextStyle(color: Colors.grey[700]),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.all(8.0),
-                              decoration: BoxDecoration(
-                                border: Border(
-                                    bottom: BorderSide(
-                                        color:
-                                        Color.fromRGBO(143, 148, 251, 1))),
-                              ),
-                              child: TextField(
-                                controller: _passwordController,
-                                obscureText: true,
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: "Password",
-                                  hintStyle: TextStyle(color: Colors.grey[700]),
-                                ),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "+967",
+                                    style: TextStyle(color: Colors.grey[700]),
+                                  ),
+                                  SizedBox(width: 8.0),
+                                  Expanded(
+                                    child: TextField(
+                                      controller: _mobileController,
+                                      keyboardType: TextInputType.phone,
+                                      maxLength: 9,
+                                      decoration: InputDecoration(
+                                        border: InputBorder.none,
+                                        counterText: "",
+                                        hintText: "Mobile Number",
+                                        hintStyle: TextStyle(color: Colors.grey[700]),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                             Container(
@@ -215,27 +272,60 @@ class _SignUpPageState extends State<SignUpPage> {
                               decoration: BoxDecoration(
                                 border: Border(
                                     bottom: BorderSide(
-                                        color:
-                                        Color.fromRGBO(143, 148, 251, 1))),
+                                        color: Color.fromRGBO(143, 148, 251, 1))),
                               ),
-                              child: TextField(
-                                obscureText: true,
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: "Confirm Password",
-                                  hintStyle: TextStyle(color: Colors.grey[700]),
-                                ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: TextField(
+                                      controller: _passwordController,
+                                      obscureText: _obscurePassword,
+                                      decoration: InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: "Password",
+                                        hintStyle: TextStyle(color: Colors.grey[700]),
+                                      ),
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: Icon(
+                                      _obscurePassword
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
+                                    ),
+                                    onPressed: _togglePasswordVisibility,
+                                  ),
+                                ],
                               ),
                             ),
                             Container(
                               padding: EdgeInsets.all(8.0),
-                              child: TextField(
-                                controller: _imeiController,
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: "IMEI",
-                                  hintStyle: TextStyle(color: Colors.grey[700]),
-                                ),
+                              decoration: BoxDecoration(
+                                border: Border(
+                                    bottom: BorderSide(
+                                        color: Color.fromRGBO(143, 148, 251, 1))),
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: TextField(
+                                      obscureText: _obscureConfirmPassword,
+                                      decoration: InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: "Confirm Password",
+                                        hintStyle: TextStyle(color: Colors.grey[700]),
+                                      ),
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: Icon(
+                                      _obscureConfirmPassword
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
+                                    ),
+                                    onPressed: _toggleConfirmPasswordVisibility,
+                                  ),
+                                ],
                               ),
                             ),
                           ],
@@ -243,32 +333,60 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                     ),
                     SizedBox(height: 30),
-                    FadeInUp(
-                      duration: Duration(milliseconds: 1900),
-                      child: GestureDetector(
-                        onTap: () {
-                          _signUp(context);
-                        },
-                        child: Container(
-                          height: 50,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            gradient: LinearGradient(
-                              colors: [
-                                Color.fromRGBO(143, 148, 251, 1),
-                                Color.fromRGBO(143, 148, 251, .6),
-                              ],
+                    if (!_isEmailVerified)
+                      FadeInUp(
+                        duration: Duration(milliseconds: 1900),
+                        child: GestureDetector(
+                          onTap: () {
+                            _signUp(context);
+                          },
+                          child: Container(
+                            height: 50,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              gradient: LinearGradient(
+                                colors: [
+                                  Color.fromRGBO(143, 148, 251, 1),
+                                  Color.fromRGBO(143, 148, 251, .6),
+                                ],
+                              ),
                             ),
-                          ),
-                          child: Center(
-                            child: Text("Sign Up",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold)),
+                            child: Center(
+                              child: Text("Sign Up",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold)),
+                            ),
                           ),
                         ),
                       ),
-                    ),
+                    if (_isEmailVerified)
+                      FadeInUp(
+                        duration: Duration(milliseconds: 1900),
+                        child: GestureDetector(
+                          onTap: () {
+                            _checkEmailVerification(context);
+                          },
+                          child: Container(
+                            height: 50,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              gradient: LinearGradient(
+                                colors: [
+                                  Color.fromRGBO(143, 148, 251, 1),
+                                  Color.fromRGBO(143, 148, 251, .6),
+                                ],
+                              ),
+                            ),
+                            child: Center(
+                              child: Text("Next",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold)),
+                            ),
+                          ),
+                        ),
+                      ),
                     SizedBox(height: 70),
                   ],
                 ),
